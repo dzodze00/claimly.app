@@ -6,8 +6,14 @@ import { UserInfoForm } from "@/components/user-info-form"
 import { useState } from "react"
 
 // EligibleLawsuits component defined directly in page.tsx
-function EligibleLawsuits({ onFileClaim, userPoints }) {
-  const [selectedLawsuits, setSelectedLawsuits] = useState([])
+function EligibleLawsuits({ 
+  onFileClaim, 
+  userPoints 
+}: { 
+  onFileClaim?: (lawsuitId: string) => void, 
+  userPoints: number 
+}) {
+  const [selectedLawsuits, setSelectedLawsuits] = useState<string[]>([])
 
   // Mock data for eligible lawsuits
   const MOCK_LAWSUITS = [
@@ -63,7 +69,7 @@ function EligibleLawsuits({ onFileClaim, userPoints }) {
     }
   ]
 
-  const toggleLawsuit = (id) => {
+  const toggleLawsuit = (id: string) => {
     if (selectedLawsuits.includes(id)) {
       setSelectedLawsuits(selectedLawsuits.filter(lawsuitId => lawsuitId !== id))
     } else {
@@ -71,13 +77,13 @@ function EligibleLawsuits({ onFileClaim, userPoints }) {
     }
   }
 
-  const handleFileClaim = (id) => {
+  const handleFileClaim = (id: string) => {
     if (onFileClaim) {
       onFileClaim(id)
     }
   }
 
-  const getEligibilityColor = (eligibility) => {
+  const getEligibilityColor = (eligibility: string) => {
     switch (eligibility) {
       case "High":
         return "text-green-600 bg-green-50"
@@ -185,7 +191,7 @@ export default function Home() {
     setFormSubmitted(true)
   }
 
-  const handleFileClaim = (lawsuitId) => {
+  const handleFileClaim = (lawsuitId: string) => {
     // In a real app, this would call an API to file the claim
     setUserPoints(prev => Math.max(0, prev - 5))
     alert(`Claim filed for lawsuit ID: ${lawsuitId}. 5 points deducted.`)
