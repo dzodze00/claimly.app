@@ -79,9 +79,11 @@ interface Lawsuit {
 interface EligibleLawsuitsProps {
   onFileClaim?: (lawsuitId: string) => void
   userPoints: number
+  onBuyPoints?: () => void
+  eligibleLawsuitIds?: string[]
 }
 
-export function EligibleLawsuits({ onFileClaim, userPoints }: EligibleLawsuitsProps) {
+export function EligibleLawsuits({ onFileClaim, userPoints, onBuyPoints, eligibleLawsuitIds }: EligibleLawsuitsProps) {
   const [selectedLawsuits, setSelectedLawsuits] = useState<string[]>([])
   const [savedLawsuits, setSavedLawsuits] = useState<string[]>([])
   const [showSavedOnly, setShowSavedOnly] = useState(false)
@@ -148,9 +150,15 @@ export function EligibleLawsuits({ onFileClaim, userPoints }: EligibleLawsuitsPr
     }
   }
 
-  const displayedLawsuits = showSavedOnly
-    ? MOCK_LAWSUITS.filter((lawsuit) => savedLawsuits.includes(lawsuit.id))
+  // Filter lawsuits based on eligibility if provided
+  const filteredLawsuits = eligibleLawsuitIds
+    ? MOCK_LAWSUITS.filter((lawsuit) => eligibleLawsuitIds.includes(lawsuit.id))
     : MOCK_LAWSUITS
+
+  // Further filter if showing saved only
+  const displayedLawsuits = showSavedOnly
+    ? filteredLawsuits.filter((lawsuit) => savedLawsuits.includes(lawsuit.id))
+    : filteredLawsuits
 
   return (
     <div className="bg-white rounded-lg border shadow-sm">
@@ -169,9 +177,11 @@ export function EligibleLawsuits({ onFileClaim, userPoints }: EligibleLawsuitsPr
           </div>
         </div>
         <p className="text-gray-600 mt-1">
-          {showSavedOnly
-            ? `Showing ${displayedLawsuits.length} saved settlements.`
-            : `Based on your information, we've found ${MOCK_LAWSUITS.length} settlements you may be eligible for.`}
+          {eligibleLawsuitIds
+            ? `You are eligible for ${displayedLawsuits.length} settlements based on your answers.`
+            : showSavedOnly
+              ? `Showing ${displayedLawsuits.length} saved settlements.`
+              : `Based on your information, we've found ${MOCK_LAWSUITS.length} settlements you may be eligible for.`}
         </p>
       </div>
 
@@ -241,7 +251,9 @@ export function EligibleLawsuits({ onFileClaim, userPoints }: EligibleLawsuitsPr
           ))
         ) : (
           <div className="p-8 text-center text-gray-500">
-            No saved lawsuits found. Save lawsuits by clicking the bookmark icon.
+            {showSavedOnly
+              ? "No saved lawsuits found. Save lawsuits by clicking the bookmark icon."
+              : "No eligible lawsuits found based on your answers."}
           </div>
         )}
       </div>
@@ -262,6 +274,20 @@ export function EligibleLawsuits({ onFileClaim, userPoints }: EligibleLawsuitsPr
               }`}
             >
               File Selected Claims
+            </button>
+          </div>
+        </div>
+      )}
+
+      {userPoints < 5 && onBuyPoints && (
+        <div className="p-4 bg-yellow-50 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-medium text-yellow-800">Low on points</span>
+              <span className="text-yellow-700 ml-2">You need at least 5 points to file a claim.</span>
+            </div>
+            <button onClick={onBuyPoints} className="px-4 py-2 rounded-md bg-yellow-600 text-white hover:bg-yellow-700">
+              Buy More Points
             </button>
           </div>
         </div>
