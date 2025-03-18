@@ -4,9 +4,69 @@ import { ChatInterface } from "@/components/chat-interface"
 import { UserInfoForm } from "@/components/user-info-form"
 import { EligibleLawsuits } from "@/components/eligible-lawsuits"
 import { FiledLawsuits } from "@/components/filed-lawsuits"
+import { EligibilityQuestionnaire } from "@/components/eligibility-questionnaire"
 import { Navbar } from "@/components/navbar"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+
+// Mock data for eligible lawsuits
+const MOCK_LAWSUITS = [
+  {
+    id: "lawsuit-1",
+    company: "TechCorp Data Breach",
+    compensation: "$75-150",
+    deadline: "2025-06-30",
+    description: "For users affected by the 2023 data breach exposing email addresses and passwords.",
+    eligibility: "High",
+    winProbability: "High",
+    status: "Open",
+    pointsCost: 5,
+  },
+  {
+    id: "lawsuit-2",
+    company: "SocialApp Privacy Settlement",
+    compensation: "$25-50",
+    deadline: "2025-08-15",
+    description: "For users whose data was improperly shared with third parties between 2020-2022.",
+    eligibility: "Medium",
+    winProbability: "Medium",
+    status: "Open",
+    pointsCost: 5,
+  },
+  {
+    id: "lawsuit-3",
+    company: "RetailCo Overcharging Settlement",
+    compensation: "$42.50",
+    deadline: "2025-05-15",
+    description: "For customers who were overcharged on shipping fees between 2019-2021.",
+    eligibility: "High",
+    winProbability: "High",
+    status: "Open",
+    pointsCost: 5,
+  },
+  {
+    id: "lawsuit-4",
+    company: "StreamingService Subscription Settlement",
+    compensation: "$15-30",
+    deadline: "2025-07-20",
+    description: "For subscribers who were charged after cancellation between 2021-2023.",
+    eligibility: "Medium",
+    winProbability: "Low",
+    status: "Open",
+    pointsCost: 5,
+  },
+  {
+    id: "lawsuit-5",
+    company: "BankCorp Fee Settlement",
+    compensation: "$50-100",
+    deadline: "2025-10-15",
+    description: "For account holders charged improper maintenance fees between 2020-2023.",
+    eligibility: "High",
+    winProbability: "Medium",
+    status: "Open",
+    pointsCost: 5,
+  },
+]
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false)
@@ -15,6 +75,8 @@ export default function Home() {
   const [showChat, setShowChat] = useState(false)
   const [showFiledLawsuits, setShowFiledLawsuits] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false)
+  const [eligibleLawsuitIds, setEligibleLawsuitIds] = useState<string[]>([])
 
   // Check for logged in user on component mount
   useEffect(() => {
@@ -32,6 +94,12 @@ export default function Home() {
 
   const handleFormSubmit = () => {
     setFormSubmitted(true)
+    setShowQuestionnaire(true)
+  }
+
+  const handleQuestionnaireComplete = (eligibleIds: string[]) => {
+    setEligibleLawsuitIds(eligibleIds)
+    setShowQuestionnaire(false)
   }
 
   const handleFileClaim = (lawsuitId: string) => {
@@ -108,11 +176,27 @@ export default function Home() {
 
           {showForm && !formSubmitted && <UserInfoForm onSubmit={handleFormSubmit} />}
 
-          {formSubmitted && (
+          {formSubmitted && showQuestionnaire && (
             <div className="space-y-6">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <h2 className="text-lg font-medium text-green-800">Scan Complete!</h2>
-                <p className="text-green-700">We've found several class action settlements you may be eligible for.</p>
+                <p className="text-green-700">
+                  We've found several class action settlements you may be eligible for. Please answer a few questions to
+                  confirm your eligibility.
+                </p>
+              </div>
+
+              <EligibilityQuestionnaire lawsuits={MOCK_LAWSUITS} onComplete={handleQuestionnaireComplete} />
+            </div>
+          )}
+
+          {formSubmitted && !showQuestionnaire && (
+            <div className="space-y-6">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h2 className="text-lg font-medium text-green-800">Eligibility Confirmed!</h2>
+                <p className="text-green-700">
+                  Based on your answers, we've identified {eligibleLawsuitIds.length} settlements you're eligible for.
+                </p>
               </div>
 
               <div className="flex justify-between items-center mb-4">
@@ -128,7 +212,12 @@ export default function Home() {
               {showFiledLawsuits ? (
                 <FiledLawsuits />
               ) : (
-                <EligibleLawsuits onFileClaim={handleFileClaim} userPoints={userPoints} />
+                <EligibleLawsuits
+                  onFileClaim={handleFileClaim}
+                  userPoints={userPoints}
+                  onBuyPoints={handleBuyPoints}
+                  eligibleLawsuitIds={eligibleLawsuitIds}
+                />
               )}
 
               <div className="mt-6">
