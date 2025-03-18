@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto py-8">
-      <Navbar />
+      <Navbar points={userPoints} onPurchase={handleBuyPoints} />
 
       {!showForm && !formSubmitted && (
         <div className="mb-8 text-center">
