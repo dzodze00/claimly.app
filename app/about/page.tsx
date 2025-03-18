@@ -16,7 +16,7 @@ export default function AboutPage() {
         <section>
           <h2 className="text-2xl font-semibold mb-4">Our Story</h2>
           <p className="text-gray-700">
-            Claimly was founded in 2025 by a team of tech entrepreneurs who recognized that billions of dollars in class
+            Claimly was founded in 2023 by a team of legal tech experts who recognized that billions of dollars in class
             action settlements go unclaimed each year. We built Claimly to bridge this gap, creating a platform that
             simplifies the process of finding and filing claims, ensuring that consumers receive the compensation they
             deserve.
