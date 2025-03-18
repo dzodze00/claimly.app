@@ -1,28 +1,23 @@
 "use client"
 
-import { Sparkles } from 'lucide-react'
-
 interface PointsDisplayProps {
-  points: number
+  points?: number
   onPurchase?: () => void
 }
 
-export function PointsDisplay({ points, onPurchase }: PointsDisplayProps) {
+export function PointsDisplay({ points = 0, onPurchase }: PointsDisplayProps) {
   return (
-    <div className="flex items-center gap-2 bg-blue-50 p-2 rounded-lg">
-      <div className="flex items-center gap-1 text-blue-600">
-        <Sparkles size={16} className="text-yellow-500" />
-        <span className="font-medium">{points} Points</span>
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 bg-yellow-50 px-2 py-1 rounded-md">
+        <span className="text-yellow-600">✦</span>
+        <span className="text-sm font-medium">{points} Points</span>
       </div>
-      
       {onPurchase && (
-        <button
-          onClick={onPurchase}
-          className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md ml-2"
-        >
+        <button onClick={onPurchase} className="text-xs text-blue-600 hover:text-blue-700 hover:underline">
           Buy Points
         </button>
       )}
     </div>
   )
 }
+
