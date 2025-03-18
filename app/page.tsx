@@ -1,11 +1,11 @@
 "use client"
 
 // Update imports to include new components
-import { ChatInterface } from "@/components/chat-interface.tsx"
-import { UserInfoForm } from "@/components/user-info-form.tsx"
-import { EligibleLawsuits } from "@/components/eligible-lawsuits.tsx"
-import { FiledLawsuits } from "@/components/filed-lawsuits.tsx"
-import { Navbar } from "@/components/navbar.tsx"
+import { ChatInterface } from "@/components/chat-interface"
+import { UserInfoForm } from "@/components/user-info-form"
+import { EligibleLawsuits } from "@/components/eligible-lawsuits"
+import { FiledLawsuits } from "@/components/filed-lawsuits"
+import { Navbar } from "@/components/navbar"
 import { useState } from "react"
 import Link from "next/link"
 
