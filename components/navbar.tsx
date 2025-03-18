@@ -4,16 +4,18 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { PointsDisplay } from "./points-display"
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, User } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 interface NavbarProps {
   points: number
-  onPurchase?: () => void
+  onPurchase: () => void
 }
 
 export function Navbar({ points, onPurchase }: NavbarProps) {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, logout } = useAuth()
 
   const isActive = (path: string) => pathname === path
 
@@ -25,75 +27,110 @@ export function Navbar({ points, onPurchase }: NavbarProps) {
   ]
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-white">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-blue-600">Claimly</span>
-          </Link>
+    <nav className="bg-white shadow">
+      <div className="container mx-auto px-6 py-3">
+        <div className="flex items-center justify-between">
+          <div className="text-xl font-semibold text-gray-800">
+            <Link href="/">My App</Link>
+          </div>
 
-          <nav className="hidden md:flex ml-8 space-x-6">
+          <div className="hidden md:flex items-center space-x-4">
             {navLinks.map((link) => (
               <Link
-                key={link.path}
+                key={link.name}
                 href={link.path}
-                className={`text-sm font-medium ${
-                  isActive(link.path) ? "text-blue-600" : "text-gray-700 hover:text-blue-600"
-                }`}
+                className={`text-gray-700 hover:text-blue-600 ${isActive(link.path) ? "font-semibold" : ""}`}
               >
                 {link.name}
               </Link>
             ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <div className="hidden md:block">
             <PointsDisplay points={points} onPurchase={onPurchase} />
+            <div className="flex space-x-2">
+              {user ? (
+                <div className="flex items-center space-x-2">
+                  <div className="hidden md:flex items-center space-x-1 text-sm text-gray-700">
+                    <User size={16} />
+                    <span>{user.firstName}</span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                  >
+                    Log out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
 
-          <div className="flex space-x-2">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600"
             >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Sign Up
-            </Link>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
-
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t">
-          <div className="container mx-auto px-4 py-3 space-y-3">
+        <div className="md:hidden bg-gray-50 py-2">
+          <div className="container mx-auto px-6 flex flex-col space-y-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                href={link.path}
-                className={`block text-sm font-medium ${isActive(link.path) ? "text-blue-600" : "text-gray-700"}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link key={link.name} href={link.path} className="block text-gray-700 hover:text-blue-600 py-2 px-4">
                 {link.name}
               </Link>
             ))}
-            <div className="pt-2">
-              <PointsDisplay points={points} onPurchase={onPurchase} />
-            </div>
+            <PointsDisplay points={points} onPurchase={onPurchase} />
+            {user ? (
+              <div className="flex flex-col items-center space-y-2">
+                <div className="flex items-center space-x-1 text-sm text-gray-700">
+                  <User size={16} />
+                  <span>{user.firstName}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                >
+                  Log out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="block px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
-    </header>
+    </nav>
   )
 }
 
